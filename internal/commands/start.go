@@ -26,6 +26,12 @@ func start(ctx *ext.Context, u *ext.Update) error {
 		ctx.Reply(u, "You are not allowed to use this bot.", nil)
 		return dispatcher.EndGroups
 	}
-	ctx.Reply(u, "Hi, send me any file to get a direct streamble link to that file.", nil)
+	ctx.Reply(u, "هلا وسهلا ، اتبع التعليمات ادناه لكي يعمل البوت عندك بصورة مستمرة :
+
+✅|- اشترك بقناة البوت ( شبكة اوكسجين ) 👇🏻
+@zezzez
+@zezzez
+
+ثم قم بأعادة توجيه مقطع الفيديو او ارساله الى البوت حتى تحصل على رابط المشاهدة ورابط للتحميل بصورة سريعة⚡️..", nil)
 	return dispatcher.EndGroups
 }
