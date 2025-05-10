@@ -7,12 +7,12 @@ import (
 	"github.com/celestix/gotgproto/dispatcher/handlers"
 	"github.com/celestix/gotgproto/ext"
 	"github.com/celestix/gotgproto/storage"
-	"github.com/celestix/gotgproto/tg"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 // التحقق من الاشتراك
-func checkSubscription(ctx *ext.Context, chatId int64, channelId string) bool {
-	member, err := ctx.BotAPI.GetChatMember(channelId, chatId)
+func checkSubscription(bot *tgbotapi.BotAPI, chatId int64, channelId string) bool {
+	member, err := bot.GetChatMember(channelId, chatId)
 	if err != nil {
 		// في حال حدوث خطأ أثناء التحقق
 		return false
@@ -44,9 +44,16 @@ func start(ctx *ext.Context, u *ext.Update) error {
 		return dispatcher.EndGroups
 	}
 
+	// إنشاء اتصال بوت جديد باستخدام API Key الخاص بك
+	bot, err := tgbotapi.NewBotAPI("YOUR_BOT_API_KEY") // استخدم الـ API Key الخاص بك
+	if err != nil {
+		ctx.Reply(u, "حدث خطأ في الاتصال بالبوت.", nil)
+		return dispatcher.EndGroups
+	}
+
 	// التحقق من الاشتراك في القناة
 	channelId := "@zezzez" // استبدلها باسم القناة التي تريد التحقق من الاشتراك فيها
-	if !checkSubscription(ctx, chatId, channelId) {
+	if !checkSubscription(bot, chatId, channelId) {
 		ctx.Reply(u, "من فضلك اشترك في قناتنا أولاً قبل استخدام البوت. القناة: @zezzez", nil)
 		return dispatcher.EndGroups
 	}
