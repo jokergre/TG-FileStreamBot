@@ -45,7 +45,7 @@ func start(ctx *ext.Context, u *ext.Update) error {
 	}
 
 	// إنشاء اتصال بوت جديد باستخدام API Key الخاص بك
-	bot, err := tgbotapi.NewBotAPI("YOUR_BOT_API_KEY") // استخدم الـ API Key الخاص بك
+	bot, err := tgbotapi.NewBotAPI("8054346385:AAFTYzkfhDQ3y2C6Vs2EdakJj4TCkUL7EMI") // استخدم الـ API Key الخاص بك
 	if err != nil {
 		ctx.Reply(u, "حدث خطأ في الاتصال بالبوت.", nil)
 		return dispatcher.EndGroups
