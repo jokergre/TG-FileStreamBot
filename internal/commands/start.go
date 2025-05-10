@@ -3,12 +3,27 @@ package commands
 import (
 	"EverythingSuckz/fsb/config"
 	"EverythingSuckz/fsb/internal/utils"
-
 	"github.com/celestix/gotgproto/dispatcher"
 	"github.com/celestix/gotgproto/dispatcher/handlers"
 	"github.com/celestix/gotgproto/ext"
 	"github.com/celestix/gotgproto/storage"
+	"github.com/celestix/gotgproto/tg"
 )
+
+// التحقق من الاشتراك
+func checkSubscription(ctx *ext.Context, chatId int64, channelId string) bool {
+	member, err := ctx.BotAPI.GetChatMember(channelId, chatId)
+	if err != nil {
+		// في حال حدوث خطأ أثناء التحقق
+		return false
+	}
+
+	// التحقق من حالة الاشتراك (يجب أن يكون العضو "مشارك" أو "أعضاء")
+	if member.Status == "member" || member.Status == "administrator" || member.Status == "creator" {
+		return true
+	}
+	return false
+}
 
 func (m *command) LoadStart(dispatcher dispatcher.Dispatcher) {
 	log := m.log.Named("start")
@@ -22,18 +37,28 @@ func start(ctx *ext.Context, u *ext.Update) error {
 	if peerChatId.Type != int(storage.TypeUser) {
 		return dispatcher.EndGroups
 	}
+
+	// إذا كانت القائمة المسموحة غير فارغة، تحقق من أن المستخدم موجود في القائمة
 	if len(config.ValueOf.AllowedUsers) != 0 && !utils.Contains(config.ValueOf.AllowedUsers, chatId) {
 		ctx.Reply(u, "You are not allowed to use this bot.", nil)
 		return dispatcher.EndGroups
 	}
-	// رسالة ترحيبية وتوجيه المستخدم حسب الطلب
+
+	// التحقق من الاشتراك في القناة
+	channelId := "@zezzez" // استبدلها باسم القناة التي تريد التحقق من الاشتراك فيها
+	if !checkSubscription(ctx, chatId, channelId) {
+		ctx.Reply(u, "من فضلك اشترك في قناتنا أولاً قبل استخدام البوت. القناة: @zezzez", nil)
+		return dispatcher.EndGroups
+	}
+
+	// رسالة ترحيبية وتوجيه المستخدم
 	ctx.Reply(u, `هلا وسهلا، 
 اتبع التعليمات أدناه لكي يعمل البوت عندك بصورة مستمرة:
 
 ✅|- اشترك بقناة البوت (شبكة اوكسجين) 👇🏻
 @zezzez
-@zezzez
 
 ثم قم بإعادة توجيه مقطع الفيديو أو إرساله إلى البوت حتى تحصل على رابط المشاهدة ورابط للتحميل بصورة سريعة⚡️.`, nil)
+
 	return dispatcher.EndGroups
 }
